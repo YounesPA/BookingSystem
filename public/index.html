@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Booking — Today Only</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+  :root {
+    --bg: #0f1115;
+    --card: #161a22;
+    --muted: #9aa3b2;
+    --text: #e6e9ef;
+    --accent: #7c5cff;
+    --accent-2: #34c759;
+    --danger: #ff453a;
+    --border: #252a35;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .wrap {
+    max-width: 920px;
+    margin: 48px auto;
+    padding: 0 20px;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  header h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: .2px;
+  }
+
+  header .sub {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (min-width: 840px) {
+    .grid {
+      grid-template-columns: 1.2fr .8fr;
+    }
+  }
+
+  .card {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, .08)),
+      var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 18px 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .25);
+  }
+
+  .row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #12151c;
+    font-size: 13px;
+  }
+
+  .count {
+    font-weight: 700;
+  }
+
+  .limit {
+    color: var(--muted);
+  }
+
+  .progress {
+    width: 100%;
+    height: 10px;
+    background: #0e1118;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 10px 0 6px;
+  }
+
+  .progress > span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #5bd6ff);
+    width: 0%;
+    transition: width .3s ease;
+  }
+
+  .list {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 8px 0 4px;
+  }
+
+  .chip {
+    background: #0e1118;
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+
+  form {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #0e1118;
+    color: var(--text);
+    outline: none;
+  }
+
+  input::placeholder {
+    color: #5b6270;
+  }
+
+  button {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .06s ease, opacity .2s ease;
+  }
+
+  button.secondary {
+    background: #1a1f2a;
+    border-color: var(--border);
+  }
+
+  button.danger {
+    background: var(--danger);
+  }
+
+  button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+  button:active {
+    transform: translateY(1px);
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    background: #0b0f15;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+  }
+
+  .toast.ok {
+    border-color: rgba(124, 92, 255, .55);
+  }
+
+  .toast.err {
+    border-color: rgba(255, 69, 58, .55);
+  }
+
+  .spacer {
+    height: 6px;
+  }
+
+  .code-toggle {
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  pre {
+    background: #0b0f15;
+    border: 1px solid var(--border);
+    padding: 10px;
+    border-radius: 12px;
+    overflow: auto;
+    display: none;
+  }
+
+  pre.show {
+    display: block;
+  }
+
+  .no-class {
+    padding: 10px 12px;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    color: var(--muted);
+    background: #0e1118;
+  }
+
+  .waitlist-section {
+    margin-top: 20px;
+  }
+
+</style>
+
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Book Today’s Class</h1>
+      <div class="sub">Bookings & cancellations only apply to <strong>today</strong>.</div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT -->
+      <section class="card" id="today-card" aria-live="polite">
+        <div class="row" style="justify-content:space-between;">
+          <div class="row"><div class="pill" id="class-pill">Loading…</div></div>
+          <div class="row"><span class="pill"><span class="count" id="spots-left">0</span> <span class="limit">spots left</span></span></div>
+        </div>
+
+        <div class="progress"><span id="progress-bar" style="width:0%"></span></div>
+        <div class="muted" id="limit-label"></div>
+
+        <div class="spacer"></div>
+        <div id="participants">
+          <div class="muted">Participants:</div>
+          <div class="list" id="chips"></div>
+        </div>
+
+        <!-- WAITING LIST SECTION -->
+        <div class="waitlist-section" id="waitlist-section" style="display:none;">
+          <div class="muted">Waiting list:</div>
+          <div class="list" id="waitlist-chips"></div>
+        </div>
+
+        <div id="no-class" class="no-class" style="display:none;">No class today. Please check the schedule on the right 👋</div>
+
+        <form id="book-form" autocomplete="off">
+          <input id="book-name" type="text" placeholder="Your name to book" required />
+          <button type="submit" id="book-btn">Book</button>
+        </form>
+
+        <form id="cancel-form" autocomplete="off">
+          <input id="cancel-name" type="text" placeholder="Name to cancel" required />
+          <button type="submit" class="secondary danger" id="cancel-btn">Cancel</button>
+        </form>
+
+        <div class="spacer"></div>
+        <div class="code-toggle" id="toggle-raw">Show raw response</div>
+        <pre id="raw"></pre>
+      </section>
+
+      <!-- RIGHT -->
+      <section class="card">
+        <div class="row" style="justify-content:space-between; margin-bottom:6px;">
+          <h2 style="margin:0; font-size:20px;">This Week</h2>
+          <button class="secondary" id="refresh-all" style="padding:8px 10px;">Refresh</button>
+        </div>
+        <div id="week-grid"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = (sel) => document.querySelector(sel);
+    const fmt = (n) => new Intl.NumberFormat().format(n);
+
+    let toastTimer;
+    function toast(msg, ok = true) {
+      const el = $("#toast");
+      el.textContent = msg;
+      el.className = "toast " + (ok ? "ok" : "err");
+      requestAnimationFrame(() => el.classList.add("show"));
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2400);
+    }
+
+    function renderToday(data) {
+      const noClass = !!data.message;
+      $("#no-class").style.display = noClass ? "block" : "none";
+      $("#participants").style.display = noClass ? "none" : "block";
+      $("#book-form").style.display = noClass ? "none" : "flex";
+      $("#cancel-form").style.display = noClass ? "none" : "flex";
+
+      // Hide waitlist section if no class
+      $("#waitlist-section").style.display = noClass ? "none" : "block";
+      $("#waitlist-chips").innerHTML = "";
+
+      if (noClass) {
+        $("#class-pill").textContent = "No class";
+        $("#limit-label").textContent = "No active class today.";
+        $("#spots-left").textContent = "0";
+        $("#progress-bar").style.width = "0%";
+        $("#chips").innerHTML = "";
+        $("#raw").textContent = JSON.stringify(data, null, 2);
+        return;
+      }
+
+      // --- Participants ---
+      const { className, classDay, classParticipantLimit, currentParticipants = [], waitingList = [] } = data;
+      const count = currentParticipants.length;
+      const spotsLeft = Math.max(classParticipantLimit - count, 0);
+      const pct = Math.max(0, Math.min(100, (count / classParticipantLimit) * 100));
+
+      $("#class-pill").textContent = `${classDay} · ${className}`;
+      $("#limit-label").textContent = `${fmt(count)}/${fmt(classParticipantLimit)} booked`;
+      $("#spots-left").textContent = fmt(spotsLeft);
+      $("#progress-bar").style.width = pct + "%";
+
+      const chips = $("#chips");
+      chips.innerHTML = "";
+      if (count === 0) {
+        const span = document.createElement("span");
+        span.className = "muted";
+        span.textContent = "No one booked yet.";
+        chips.appendChild(span);
+      } else {
+        currentParticipants.forEach(n => {
+          const s = document.createElement("span");
+          s.className = "chip";
+          s.textContent = n;
+          chips.appendChild(s);
+        });
+      }
+
+      // --- Waiting List ---
+      // waitingList should be an array from API
+      const waitlist = $("#waitlist-chips");
+      if (Array.isArray(waitingList) && waitingList.length > 0) {
+        waitingList.forEach(n => {
+          const s = document.createElement("span");
+          s.className = "chip";
+          s.textContent = n;
+          waitlist.appendChild(s);
+        });
+      } else {
+        const span = document.createElement("span");
+        span.className = "muted";
+        span.textContent = "No one on the waiting list yet.";
+        waitlist.appendChild(span);
+      }
+
+      $("#book-btn").disabled = false; // Always allow booking
+      $("#book-name").disabled = false; // Always allow typing
+      $("#book-name").placeholder = spotsLeft === 0 ? "Class is full (join waitlist)" : "Your name to book";
+
+      $("#raw").textContent = JSON.stringify(data, null, 2);
+    }
+
+    function renderWeekGrid(map) {
+      const container = $("#week-grid");
+      container.innerHTML = "";
+      const order = ["monday", "wednesday", "friday", "saturday"];
+      order.forEach(d => {
+        const cls = map[d];
+        if (!cls) return;
+        const div = document.createElement("div");
+        div.className = "row";
+        div.style.justifyContent = "space-between";
+        div.style.borderTop = "1px solid var(--border)";
+        div.style.padding = "10px 0";
+        div.innerHTML = `
+          <div class="row">
+            <strong style="font-size:15px; width:110px; display:inline-block; text-transform:capitalize;">${d}</strong>
+            <span class="pill">${cls.className}</span>
+          </div>
+          <div class="row">
+            <span class="muted">${cls.currentParticipants.length}/${cls.classParticipantLimit}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function getToday() {
+      const r = await fetch("/classes/today");
+      return r.json();
+    }
+    async function getAll() {
+      const r = await fetch("/classes");
+      return r.json();
+    }
+    async function book(name) {
+      const r = await fetch("/book", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ name }) });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || "Booking failed");
+      return data;
+    }
+    async function cancel(name) {
+      const r = await fetch("/book", { method:"DELETE", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ name }) });
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || "Cancellation failed");
+      return data;
+    }
+
+    async function refreshUI() {
+      const [today, all] = await Promise.all([getToday(), getAll()]);
+      renderToday(today);
+      renderWeekGrid(all);
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      $("#toggle-raw").addEventListener("click", () => {
+        $("#raw").classList.toggle("show");
+        $("#toggle-raw").textContent = $("#raw").classList.contains("show") ? "Hide raw response" : "Show raw response";
+      });
+      $("#refresh-all").addEventListener("click", refreshUI);
+
+      $("#book-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = $("#book-name").value.trim();
+        if (!name) return;
+        $("#book-btn").disabled = true;
+        try { await book(name); toast(`Booked ${name}`); $("#book-name").value = ""; await refreshUI(); }
+        catch (err) { toast(err.message, false); }
+        finally { $("#book-btn").disabled = false; }
+      });
+
+      $("#cancel-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = $("#cancel-name").value.trim();
+        if (!name) return;
+        $("#cancel-btn").disabled = true;
+        try { await cancel(name); toast(`Cancelled ${name}`); $("#cancel-name").value = ""; await refreshUI(); }
+        catch (err) { toast(err.message, false); }
+        finally { $("#cancel-btn").disabled = false; }
+      });
+
+      await refreshUI();
+    });
+  </script>
+</body>
+</html>
